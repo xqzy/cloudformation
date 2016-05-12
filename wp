@@ -294,12 +294,12 @@
                 "echo \"\\$table_prefix  = 'wp_';\" >> $wp_config\n",
                 "echo \"if ( !defined('ABSPATH') )\" >> $wp_config\n",
                 "echo \"    define('ABSPATH', dirname(__FILE__) . '/');\" >> $wp_config\n",
-                "echo \"require_once(ABSPATH . 'wp-settings.php');\" >> $wp_config\n"
-                "curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar\n"
-                "chmod +x wp-cli.phar\n"
-                "sudo mv wp-cli.phar /usr/local/bin/wp\n"
-                "cd /var/www/html/wordpress\n"
-                "sudo /usr/local/bin/wp plugin install hello-dolly\n"
+                "echo \"require_once(ABSPATH . 'wp-settings.php');\" >> $wp_config\n",
+                "curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar\n",
+                "chmod +x wp-cli.phar\n",
+                "sudo mv wp-cli.phar /usr/local/bin/wp\n",
+                "cd /var/www/html/wordpress\n",
+                "sudo /usr/local/bin/wp plugin install hello-dolly\n",
                 "/usr/local/bin/wp plugin activate hello-dolly\n"
                 
               ]
