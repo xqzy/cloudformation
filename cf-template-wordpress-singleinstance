@@ -613,6 +613,9 @@ SSH access",
                                 "group": "root"
                             }
                         },
+                        "sources" : {
+                           "/usr/local/bin/s3cmd" : "http://awsu-amm.s3.amazonaws.com/s3cmd-v1.1.0-beta3.zip"
+                        },
                         "services": {
                             "sysvinit": {
                                 "cfn-hup": {
