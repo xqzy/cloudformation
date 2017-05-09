@@ -1,10 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "AWS CloudFormation Sample Template WordPress_Single_Instance: WordPress 
-is web software you can use to create a beautiful website or blog. This template installs WordPress 
-with a local MySQL database for storage. It demonstrates using the AWS CloudFormation bootstrap 
-scripts to deploy WordPress. **WARNING** This template creates an Amazon EC2 instance. You 
-will be billed for the AWS resources used if you create a stack from this template.",
+    "Description": "ources used if you create a stack from this template.",
     "Parameters": {
         "KeyName": {
             "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
@@ -524,8 +520,7 @@ will be billed for the AWS resources used if you create a stack from this templa
         "WebServerSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
-                "GroupDescription": "Enable HTTP access via port 80 locked down to the load balancer + 
-SSH access",
+                "GroupDescription": "Enable",
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
@@ -684,8 +679,7 @@ SSH access",
                                         "",
                                         [
                                             "#!/bin/bash -xe\n",
-                                            "cp /var/www/html/wordpress/wp-config-sample.php 
-/var/www/html/wordpress/wp-config.php\n",
+                                            "cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php\n",
                                             "sed -i \"s/'database_name_here'/'",
                                             {
                                                 "Ref": "DBName"
@@ -918,9 +912,3 @@ SSH access",
         }
     }
 }
-
-
-
-
-
-
