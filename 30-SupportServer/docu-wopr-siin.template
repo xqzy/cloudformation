@@ -514,9 +514,88 @@
                 "HVM64": "ami-8e6aa0e3",
                 "HVMG2": "NOT_SUPPORTED"
             }
-        }
+        },
+      "Region2Principal" : {
+      	"us-east-1"      : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"us-west-2"      : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"us-west-1"      : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"eu-west-1"      : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"eu-west-2"      : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"ap-southeast-1" : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"ap-northeast-1" : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"ap-northeast-2" : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"ap-southeast-2" : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"ap-south-1"     : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"us-east-2"      : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"ca-central-1"   : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"sa-east-1"      : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" },
+      	"cn-north-1"     : { "EC2Principal" : "ec2.amazonaws.com.cn", "OpsWorksPrincipal" : "opsworks.amazonaws.com.cn" },
+      	"eu-central-1"   : { "EC2Principal" : "ec2.amazonaws.com", "OpsWorksPrincipal" : "opsworks.amazonaws.com" }
+      },
+      "Region2ARNPrefix": {
+      	"us-east-1"      : { "ARNPrefix": "arn:aws:" },
+      	"us-west-1"      : { "ARNPrefix": "arn:aws:" },
+      	"us-west-2"      : { "ARNPrefix": "arn:aws:" },
+      	"eu-west-1"      : { "ARNPrefix": "arn:aws:" },
+      	"eu-west-2"      : { "ARNPrefix": "arn:aws:" },
+      	"ap-northeast-1" : { "ARNPrefix": "arn:aws:" },
+      	"ap-northeast-2" : { "ARNPrefix": "arn:aws:" },
+      	"ap-southeast-1" : { "ARNPrefix": "arn:aws:" },
+      	"ap-southeast-2" : { "ARNPrefix": "arn:aws:" },
+      	"ap-south-1"     : { "ARNPrefix": "arn:aws:" },
+      	"us-east-2"      : { "ARNPrefix": "arn:aws:" },
+      	"ca-central-1"   : { "ARNPrefix": "arn:aws:" },
+      	"sa-east-1"      : { "ARNPrefix": "arn:aws:" },
+      	"cn-north-1"     : { "ARNPrefix": "arn:aws-cn:" },
+      	"eu-central-1"   : { "ARNPrefix": "arn:aws:" }
+      }
+
+        
+        
     },
     "Resources": {
+      	
+      "LogRole": {
+      	"Type": "AWS::IAM::Role",
+      	"Properties": {
+        	"AssumeRolePolicyDocument": {
+          		"Version": "2012-10-17",
+          		"Statement": [ {
+            		"Effect": "Allow",
+            		"Principal": { "Service": [{ "Fn::FindInMap" : ["Region2Principal", {"Ref" : "AWS::Region"}, "EC2Principal"]}] },
+            		"Action": [ "sts:AssumeRole" ]
+        		} ] },
+        		"Path": "/",
+        		"Policies": [ {
+          			"PolicyName": "LogRolePolicy",
+          			"PolicyDocument": {
+            			"Version": "2012-10-17",
+            			"Statement": [ {
+              				"Effect": "Allow",
+              				"Action": ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents", "logs:DescribeLogStreams"],
+              				"Resource": [ { "Fn::Join" : ["", [ { "Fn::FindInMap" : ["Region2ARNPrefix", {"Ref" : "AWS::Region"}, "ARNPrefix"] }, 
+                            	"logs:*:*:*" ]]}]
+          			} ] }
+        		} ]
+      	}
+	  },
+
+    "LogRoleInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [ { "Ref": "LogRole" } ]
+      }
+    },
+
+    "CloudFormationLogs": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 7
+      }
+    },
+      
+      
         "WebServerSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
@@ -552,6 +631,7 @@
                         "wordpress_install": [
                             "install_cfn",
                             "install_wordpress",
+                            "install_logs",
                             "configure_wordpress"
                         ]
                     },
@@ -630,7 +710,8 @@
                                 "mysql-server": [],
                                 "mysql-devel": [],
                                 "mysql-libs": [],
-                                "httpd": []
+                                "httpd": [],
+                                "vsftpd": []
                             }
                         },
                         "sources": {
@@ -701,7 +782,28 @@
                                 "mode": "000500",
                                 "owner": "root",
                                 "group": "root"
+                            },
+                            
+                            "/tmp/miscsetup": {
+                                "content": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "#!/bin/bash -xe\n",
+                                            "cd /tmp\n",
+                                            "curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar\n",
+                                            "chmod +x ./wp-cli.phar\n",
+                                            "mv ./wp-cli.phar /usr/local/bin/wp\n"
+                                            
+                                        ]
+                                    ]
+                                },
+                                "mode": "000500",
+                                "owner": "root",
+                                "group": "root"
                             }
+                            
+                            
                         },
                         "services": {
                             "sysvinit": {
@@ -716,6 +818,87 @@
                             }
                         }
                     },
+                    
+                    
+                    
+          "install_logs": {
+            "packages" : {
+              "yum" : {
+                "awslogs" : []
+              }
+            },
+
+            "files": {
+              "/etc/awslogs/awslogs.conf": {
+                "content": { "Fn::Join": [ "", [
+                  "[general]\n",
+                  "state_file= /var/awslogs/state/agent-state\n",
+
+                  "[/var/log/cloud-init.log]\n",
+                  "file = /var/log/cloud-init.log\n",
+                  "log_group_name = ", { "Ref": "CloudFormationLogs" }, "\n",
+                  "log_stream_name = {instance_id}/cloud-init.log\n",
+                  "datetime_format = \n",
+
+                  "[/var/log/cloud-init-output.log]\n",
+                  "file = /var/log/cloud-init-output.log\n",
+                  "log_group_name = ", { "Ref": "CloudFormationLogs" }, "\n",
+                  "log_stream_name = {instance_id}/cloud-init-output.log\n",
+                  "datetime_format = \n",
+
+                  "[/var/log/cfn-init.log]\n",
+                  "file = /var/log/cfn-init.log\n",
+                  "log_group_name = ", { "Ref": "CloudFormationLogs" }, "\n",
+                  "log_stream_name = {instance_id}/cfn-init.log\n",
+                  "datetime_format = \n",
+
+                  "[/var/log/cfn-hup.log]\n",
+                  "file = /var/log/cfn-hup.log\n",
+                  "log_group_name = ", { "Ref": "CloudFormationLogs" }, "\n",
+                  "log_stream_name = {instance_id}/cfn-hup.log\n",
+                  "datetime_format = \n",
+
+                  "[/var/log/cfn-wire.log]\n",
+                  "file = /var/log/cfn-wire.log\n",
+                  "log_group_name = ", { "Ref": "CloudFormationLogs" }, "\n",
+                  "log_stream_name = {instance_id}/cfn-wire.log\n",
+                  "datetime_format = \n",
+
+                  "[/var/log/httpd]\n",
+                  "file = /var/log/httpd/*\n",
+                  "log_group_name = ", { "Ref": "CloudFormationLogs" }, "\n",
+                  "log_stream_name = {instance_id}/httpd\n",
+                  "datetime_format = %d/%b/%Y:%H:%M:%S\n"
+                ] ] },
+                "mode": "000444",
+                "owner": "root",
+                "group": "root"
+              },
+              "/etc/awslogs/awscli.conf": {
+                "content": { "Fn::Join": [ "", [
+                  "[plugins]\n",
+                  "cwlogs = cwlogs\n",
+                  "[default]\n",
+                  "region = ", { "Ref" : "AWS::Region" }, "\n"
+                ] ] },
+                "mode": "000444",
+                "owner": "root",
+                "group": "root"
+              }
+            },
+            "commands" : {
+              "01_create_state_directory" : {
+                "command" : "mkdir -p /var/awslogs/state"
+              }
+            },
+            "services" : {
+              "sysvinit" : {
+                "awslogs"    : { "enabled" : "true", "ensureRunning" : "true",
+                                 "files" : [ "/etc/awslogs/awslogs.conf" ] }
+              }
+            }
+          },                    
+                    
                     "configure_wordpress": {
                         "commands": {
                             "01_set_mysql_root_password": {
@@ -781,6 +964,9 @@
                             "03_configure_wordpress": {
                                 "command": "/tmp/create-wp-config",
                                 "cwd": "/var/www/html/wordpress"
+                            },
+                            "04_setup_wpcli": {
+                              	"command": "/tmp/miscsetup"
                             }
                         }
                     }
