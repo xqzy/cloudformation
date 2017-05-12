@@ -1,0 +1,23 @@
+#
+# script 	rs-backup
+# purpose	make backups from ec2-instance into a S3 bucket, using wordpress 
+# 			backup ad database backup commands.
+# needs		wp-cli
+#			aws-cli
+# app		doc, webapp
+# environments	prod (scheduled via cron), test & dev (only run when needed)
+# runas		ec2-user
+# location	github
+# created	12-5-2017
+# author	rs
+#
+# 
+cd /var/www/html/wordpress
+mkdir /tmp/rsbackup
+sudo /usr/local/bin/wp db export /tmp/rsbackup/docserver-data.$(date +"%Y%m%d_%H
+%M%S")
+sudo tar -vczf /tmp/rsbackup/docserver-file.$(date +"%Y%m%d_%H%M%S") .
+## Transfer files to s3
+
+aws s3 sync /tmp/rsbackup s3://thirty-zero-devops
+rm -rf /tmp/rsbackup/*
