@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 # script 	rs-backup
 # purpose	make backups from ec2-instance into a S3 bucket, using wordpress 
