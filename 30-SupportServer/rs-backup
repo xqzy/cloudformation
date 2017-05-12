@@ -7,7 +7,8 @@
 # app		doc, webapp
 # environments	prod (scheduled via cron), test & dev (only run when needed)
 # runas		ec2-user
-# location	github
+# location	remote: github
+#			local: /usr/local/bin
 # created	12-5-2017
 # author	rs
 #
