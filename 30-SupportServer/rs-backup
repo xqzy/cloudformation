@@ -14,11 +14,15 @@
 # author	rs
 #
 # 
+RSLOG = "/var/log/rslog"
+S3BUCKET = "thirty-zero-devops"
+
+touch $RSLOG
 cd /var/www/html/wordpress || { echo "Error: wordpress directory not found"; exit 1 ; }
 mkdir /tmp/rsbackup
 sudo /usr/local/bin/wp db export /tmp/rsbackup/docserver-data.$(date +"%Y%m%d_%H%M%S") || { echo "Could not create wordpress database export with wp db export"; exit 1 ; }
 sudo tar -vczf /tmp/rsbackup/docserver-file.$(date +"%Y%m%d_%H%M%S") .
 ## Transfer files to s3
 
-aws s3 sync /tmp/rsbackup s3://thirty-zero-devops || { echo "Could not connect to s3"; exit 1 ; }
+aws s3 sync /tmp/rsbackup s3://$S3BUCKET || { echo "Could not connect to s3"; exit 1 ; }
 rm -rf /tmp/rsbackup/*
