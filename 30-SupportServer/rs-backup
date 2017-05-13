@@ -16,7 +16,6 @@
 # 
 RSLOG = "/var/log/rslog"
 S3BUCKET = "thirty-zero-devops"
-
 touch $RSLOG
 cd /var/www/html/wordpress || { echo "Error: wordpress directory not found"; exit 1 ; }
 mkdir /tmp/rsbackup

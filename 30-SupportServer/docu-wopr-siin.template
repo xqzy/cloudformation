@@ -1,12 +1,8 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "ources used if you create a stack from this template.",
+    "Description": "Standard stack for wordpress installation",
     "Parameters": {
-        "KeyName": {
-            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
-            "Type": "AWS::EC2::KeyPair::KeyName",
-            "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
-        },
+       
         "InstanceType": {
             "Description": "WebServer EC2 instance type",
             "Type": "String",
@@ -953,6 +949,7 @@
             },
             "Properties": {
               "IamInstanceProfile" : "thirty-server-ec2",
+              "KeyName" : "thirty-gp001-keypair-eu",
               "ImageId": {
                     "Fn::FindInMap": [
                         "AWSRegionArch2AMI",
@@ -978,9 +975,7 @@
                         "Ref": "WebServerSecurityGroup"
                     }
                 ],
-                "KeyName": {
-                    "Ref": "KeyName"
-                },
+                "KeyName":  "thirty-gp001-keypair-eu", 
                 "UserData": {
                     "Fn::Base64": {
                         "Fn::Join": [

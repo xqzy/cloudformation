@@ -1,0 +1,19 @@
+ #!/bin/bash
+#
+# script 	rs-wp-install-core
+# purpose	install wordpress core from command line
+# needs		wp-cli
+#			aws-cli
+# app		doc, webapp
+# environments	all 
+# runas		ec2-user
+# location	remote: github
+#			local: /usr/local/bin
+# created	12-5-2017
+# author	rs
+#
+export PUBHOST=`curl -s http://169.254.169.254/latest/meta-data/public-hostname | cut -d[ -f 1`
+export PUBURL=$PUBHOST"/wordpress/"
+cd /var/www/html/wordpress
+wp core install --url=$PUBURL --title="Thirty" --admin_user="admin" --admin_password="contentbaas" --admin_email="rob.schuurman@hccnet.nl"
+ 
