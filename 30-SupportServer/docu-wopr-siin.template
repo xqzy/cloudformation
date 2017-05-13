@@ -690,6 +690,19 @@
                             "/var/www/html": "http://wordpress.org/latest.tar.gz"
                         },
                         "files": {
+                            "/usr/local/bin/rs-wp-install-core" : {
+                            	"source"  : "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/rs-wp-install-core",
+                            	"mode"    : "000750",
+                            	"owner"   : "ec2-user",
+                            	"group"   : "ec2-user"
+                          	},
+                           "/usr/local/bin/rs-backup" : {
+                            	"source"  : "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/rs-backup",
+                            	"mode"    : "000750",
+                            	"owner"   : "ec2-user",
+                            	"group"   : "ec2-user"
+                          	},
+                          
                             "/tmp/setup.mysql": {
                                 "content": {
                                     "Fn::Join": [
@@ -751,11 +764,17 @@
                                         ]
                                     ]
                                 },
-                                "mode": "000500",
+                                "mode": "000555",
                                 "owner": "root",
                                 "group": "root"
                             },
                             
+                            "/usr/local/bin/wp": {
+                             	"source"  : "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar",
+                            	"mode"    : "000755",
+                            	"owner"   : "ec2-user",
+                            	"group"   : "ec2-user"
+                            }, 
                             "/tmp/miscsetup": {
                                 "content": {
                                     "Fn::Join": [
@@ -934,12 +953,13 @@
                                 }
                             },
                             "03_configure_wordpress": {
-                                "command": "/tmp/create-wp-config",
-                                "cwd": "/var/www/html/wordpress"
-                            },
-                            "04_setup_wpcli": {
-                              	"command": "/tmp/miscsetup"
+                             	"cwd": "/var/www/html/wordpress",
+                              	"command": "/tmp/create-wp-config",
+                                "test" : "ls /var/www/html/wordpress/wp-config.php",
+                                "command": "/usr/local/bin/rs-wp-install-core",
+                                "command": "/usr/local/bin/wp  plugin install cm-route-manager"
                             }
+                            
                         }
                     }
                 },
