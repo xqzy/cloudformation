@@ -15,5 +15,5 @@
 export PUBHOST=`curl -s http://169.254.169.254/latest/meta-data/public-hostname | cut -d[ -f 1`
 export PUBURL=$PUBHOST"/wordpress/"
 cd /var/www/html/wordpress
-wp core install --url=$PUBURL --title="Thirty" --admin_user="admin" --admin_password="contentbaas" --admin_email="rob.schuurman@hccnet.nl"
+/usr/local/bin/wp core install --url=$PUBURL --title="Thirty" --admin_user="admin" --admin_password="contentbaas" --admin_email="rob.schuurman@hccnet.nl"
  
