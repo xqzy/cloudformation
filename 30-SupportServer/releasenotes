@@ -1,0 +1,9 @@
+Version 0.1.2
+-------------
+
+Added funnctionality to restore the database during installation from S3 images
+at s3://thirty-zero-devops bucket with names DATAFILENAME="docserver-data.ref01"
+FILEFILENAME="docserver-file.ref01"
+
+These files are read from S3 and imported during the set-up of the environment, so that
+there is a working wp instance, filled with data, after stack creation!!
