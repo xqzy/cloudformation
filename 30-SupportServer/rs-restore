@@ -28,6 +28,11 @@ sudo tar xvf /tmp/rsbackup/$FILEFILENAME
 echo "### starting databases ####"
 sudo /etc/init.d/mysqld start
 echo "### changing database options to reflect new URL ####"
+export PUBHOST=`curl -s http://169.254.169.254/latest/meta-data/public-hostname`
+export PUBURL="http://"$PUBHOST"/wordpress"
+echo "Setting URL to :"$PUBURL
+
+echo "changing URL in wordpress database. current values are :" 
 mysql -u "root" -pdatabaas wordpressdb -e " select * from wp_options where option_name = 'siteurl';" 
 mysql -u "root" -pdatabaas wordpressdb -e " select * from wp_options where option_name = 'home';"
 
@@ -39,5 +44,5 @@ mysql -u "root" -pdatabaas wordpressdb -e " update wp_options set option_value =
 echo "changing URL in wordpress database. new  values are :" 
 mysql -u "root" -pdatabaas wordpressdb -e " select * from wp_options where option_name = 'siteurl';" 
 
-mysql -u "root" -pdatabaas wordpressdb -e " select * from wp_options where option_name = 'home';
+mysql -u "root" -pdatabaas wordpressdb -e " select * from wp_options where option_name = 'home';"
 echo "### end of restore procedure ####"
