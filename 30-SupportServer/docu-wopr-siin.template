@@ -609,7 +609,8 @@
                             "install_cfn",
                             "install_wordpress",
                             "install_logs",
-                            "configure_wordpress"
+                            "configure_wordpress",
+                            "install_wp_plugins"
                         ]
                     },
                     "install_cfn": {
@@ -798,6 +799,22 @@
                     
                     
                     
+          "install_wp_plugins": {
+           		"files": {
+                 	"/usr/local/bin/rs-wp-install-plugins" : {
+                  		"source"	: "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/rs-wp-install-plugins",                 
+			      		"mode"		: "000755",
+                  		"owner"		: "ec2-user",
+                  		"group"		: "ec2-user"
+     				}
+        		},
+         		"commands" : {
+              		"01_wp_install_cmroutemanager" : {
+                		"command" : "/usr/local/bin/rs-wp-install-plugins"
+              		}
+            	}
+            },
+            
           "install_logs": {
             "packages" : {
               "yum" : {
