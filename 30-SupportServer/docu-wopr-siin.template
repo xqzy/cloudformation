@@ -696,6 +696,12 @@
                             "/var/www/html": "http://wordpress.org/latest.tar.gz"
                         },
                         "files": {
+                          	"/usr/local/bin/rs-backup" : {
+                  				"source"	: "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/rs-backup",                 
+			      				"mode"		: "000755",
+                  				"owner"		: "ec2-user",
+                  				"group"		: "ec2-user"                       
+                           	}, 
                             "/tmp/setup.mysql": {
                                 "content": {
                                     "Fn::Join": [
