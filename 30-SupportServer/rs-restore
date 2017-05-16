@@ -14,8 +14,8 @@
 #
 DATAFILENAME="docserver-data.ref01"
 FILEFILENAME="docserver-file.ref01"
-echo "### stopping mysql first, to restore backupL ####"
-sudo /etc/init.d/mysqld stop
+# echo "### stopping mysql first, to restore backupL ####"
+# sudo /etc/init.d/mysqld stop
 mkdir /tmp/rsbackup
 echo "### fetching backup files from S3 ####"
 aws s3 cp s3://thirty-zero-devops/$DATAFILENAME /tmp/rsbackup
@@ -25,8 +25,8 @@ echo "### restoring datbase file into the database  ####"
 sudo /usr/local/bin/wp db import /tmp/rsbackup/$DATAFILENAME
 echo "### extracting wordpress files into wp filesystem directories ####"
 sudo tar xvf /tmp/rsbackup/$FILEFILENAME
-echo "### starting databases ####"
-sudo /etc/init.d/mysqld start
+# echo "### starting databases ####"
+# sudo /etc/init.d/mysqld start
 echo "### changing database options to reflect new URL ####"
 export PUBHOST=`curl -s http://169.254.169.254/latest/meta-data/public-hostname`
 export PUBURL="http://"$PUBHOST"/wordpress"
