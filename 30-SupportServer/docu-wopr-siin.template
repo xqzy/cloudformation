@@ -610,7 +610,8 @@
                             "install_wordpress",
                             "install_logs",
                             "configure_wordpress",
-                            "install_wp_plugins"
+                            "install_wp_plugins",
+                            "restore_wpbackup"
                         ]
                     },
                     "install_cfn": {
@@ -820,6 +821,23 @@
               		}
             	}
             },
+            
+          "restore_wpbackup" : {
+            "files": {
+                 	"/usr/local/bin/rs-restore" : {
+                  		"source"	: "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/rs-restore",                 
+			      		"mode"		: "000755",
+                  		"owner"		: "ec2-user",
+                  		"group"		: "ec2-user"
+     				}
+        		},
+         		"commands" : {
+              		"01_wp_restore_database_from_S3" : {
+                		"command" : "/usr/local/bin/rs-restore"
+              		}
+            	}
+            
+          }, 
             
           "install_logs": {
             "packages" : {

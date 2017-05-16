@@ -1,0 +1,43 @@
+ #!/bin/bash
+#
+# script 	rs-restore
+# purpose	restore previously backed up version of wordpress install and data.
+# needs		wp-cli
+#			aws-cli
+# app		doc, webapp
+# environments	all 
+# runas		ec2-user
+# location	remote: github
+#			local: /usr/local/bin
+# created	12-5-2017
+# author	rs
+#
+DATAFILENAME="docserver-data.ref01"
+FILEFILENAME="docserver-file.ref01"
+echo "### stopping mysql first, to restore backupL ####"
+sudo /etc/init.d/mysqld stop
+mkdir /tmp/rsbackup
+echo "### fetching backup files from S3 ####"
+aws s3 cp s3://thirty-zero-devops/$DATAFILENAME /tmp/rsbackup
+aws s3 cp s3://thirty-zero-devops/$FILEFILENAME /tmp/rsbackup
+cd /var/www/html/wordpress
+echo "### restoring datbase file into the database  ####"
+sudo /usr/local/bin/wp db import /tmp/rsbackup/$DATAFILENAME
+echo "### extracting wordpress files into wp filesystem directories ####"
+sudo tar xvf /tmp/rsbackup/$FILEFILENAME
+echo "### starting databases ####"
+sudo /etc/init.d/mysqld start
+echo "### changing database options to reflect new URL ####"
+mysql -u "root" -pdatabaas wordpressdb -e " select * from wp_options where option_name = 'siteurl';" 
+mysql -u "root" -pdatabaas wordpressdb -e " select * from wp_options where option_name = 'home';"
+
+echo " stap 2" 
+echo "-->"$PUBURL"<---"
+mysql -u "root" -pdatabaas wordpressdb -e " update wp_options set option_value = '$PUBURL' where option_id = 1;"
+mysql -u "root" -pdatabaas wordpressdb -e " update wp_options set option_value = '$PUBURL' where option_id = 2;"
+
+echo "changing URL in wordpress database. new  values are :" 
+mysql -u "root" -pdatabaas wordpressdb -e " select * from wp_options where option_name = 'siteurl';" 
+
+mysql -u "root" -pdatabaas wordpressdb -e " select * from wp_options where option_name = 'home';
+echo "### end of restore procedure ####"
