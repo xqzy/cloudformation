@@ -1,0 +1,17 @@
+ #!/bin/bash
+#
+# script 	rs-wp-install-plugins
+# purpose	install wordpress core from command line
+# needs		wp-cli
+#			
+# app		doc, webapp
+# environments	all 
+# runas		ec2-user
+# location	remote: github
+#			local: /usr/local/bin
+# created	12-5-2017
+# author	rs
+#
+cd /var/www/html/wordpress
+sudo /usr/local/bin/wp plugin install cm-route-manager
+ 
