@@ -897,7 +897,7 @@
                 				"group"		: "ec2-user"
                     		},
                       		"/etc/httpd/conf/httpd.conf" : {
-                				"source" 	: { "Fn::Join" : [ "", ["https://raw.githubusercontent.com/xqzy/cloudformation/", { "Ref" : "BranchName" }, "/30-SupportServer/httpd"]]},                 
+                				"source" 	: { "Fn::Join" : [ "", ["https://raw.githubusercontent.com/xqzy/cloudformation/", { "Ref" : "BranchName" }, "/30-SupportServer/httpdconf"]]},                 
 								"mode"		: "000644",
                 				"owner"		: "root",
                 				"group"		: "root"
