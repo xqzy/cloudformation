@@ -878,7 +878,13 @@
 								"mode"		: "000755",
                 				"owner"		: "ec2-user",
                 				"group"		: "ec2-user"
-                   			}
+                   			},
+                      		"/var/www/html/wordpress/.htaccess" : {
+                          		"source"	: "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/htaccess",
+                            	"mode"		: "000755",
+                             	"owner"		: "ec2-user",
+                              	"group"		: "ec2-user"
+                        	}
                        	}, 
                         "commands": {
                             "01_set_mysql_root_password": {
