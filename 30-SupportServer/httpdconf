@@ -1,12 +1,12 @@
 #
-# This is the main Apache server configuration file.  It contains the
+# This is the main Apache server configuration file.  It contains the 
 # configuration directives that give the server its instructions.
 # See <URL:http://httpd.apache.org/docs/2.2/> for detailed information.
-# In particular, see
+# In particular, see 
 # <URL:http://httpd.apache.org/docs/2.2/mod/directives.html>
 # for a discussion of each configuration directive.
 #
-#
+#v
 # Do NOT simply read the instructions in here without understanding
 # what they do.  They're here only as hints or reminders.  If you are unsure
 # consult the online docs. You have been warned.
