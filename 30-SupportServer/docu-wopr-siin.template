@@ -1,8 +1,19 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "ources used if you create a stack from this template.",
+    "Description": "Template for standard wordpress servers.",
     "Parameters": {
-        "KeyName": "thirty-gp001-keypair-eu",
+        "KeyName": {
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
+            "Type": "AWS::EC2::KeyPair::KeyName",
+            "Default": "thirty-gp001-keypair-eu",
+            "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
+        },
+        "BranchName": {
+          	"Description": "Name of GIT branch used of the software being deployed",
+            "Type": "String",
+            "Default": "master",
+            "ConstraintDescription": "must be same as the branchname in GIT"
+        }, 
         "InstanceType": {
             "Description": "WebServer EC2 instance type",
             "Type": "String",
@@ -879,12 +890,13 @@
                 				"owner"		: "ec2-user",
                 				"group"		: "ec2-user"
                    			},
-                      		"/var/www/html/wordpress/.htaccess" : {
-                          		"source"	: "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/htaccess",
-                            	"mode"		: "000755",
-                             	"owner"		: "ec2-user",
-                              	"group"		: "ec2-user"
-                        	}
+                      		"/var/www/html/.htaccess" : {
+                				"source"	: "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/htaccess",
+                     			"source" 	: { "Fn::Join" : [ "", ["https://raw.githubusercontent.com/xqzy/cloudformation/", { "Ref" : "BranchName" }, "/30-SupportServer/htaccess"]]},                 
+								"mode"		: "000755",
+                				"owner"		: "ec2-user",
+                				"group"		: "ec2-user"
+                   			}
                        	}, 
                         "commands": {
                             "01_set_mysql_root_password": {
@@ -956,6 +968,10 @@
                             },
                             "05_wordpress_install_core": {
                               "command": "/usr/local/bin/rs-wp-install-core"
+                            },
+                            "06_wordpress_install_plugins": {
+                              "cwd" : "/var/www/html/wordpress",
+                              "command":"/usr/local/bin/wp plugin install cm-route-manager"
                             }
                         }
                     }
@@ -991,7 +1007,9 @@
                         "Ref": "WebServerSecurityGroup"
                     }
                 ],
-                "KeyName": "thirty-gp001-keypair-eu",
+                "KeyName": {
+                    "Ref": "KeyName"
+                },
                 "UserData": {
                     "Fn::Base64": {
                         "Fn::Join": [
