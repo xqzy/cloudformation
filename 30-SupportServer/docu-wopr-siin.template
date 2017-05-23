@@ -1,20 +1,13 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Template for standard wordpress servers.",
+    "Description": "ources used if you create a stack from this template.",
     "Parameters": {
-
-        "KeyName": {
+       "KeyName": {
             "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
             "Type": "AWS::EC2::KeyPair::KeyName",
-            "Default": "thirty-gp001-keypair-eu",
+            "Default" : "thirty-gp001-keypair-eu", 
             "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
         },
-        "BranchName": {
-          	"Description": "Name of GIT branch used of the software being deployed",
-            "Type": "String",
-            "Default": "master",
-            "ConstraintDescription": "must be same as the branchname in GIT"
-        }, 
         "InstanceType": {
             "Description": "WebServer EC2 instance type",
             "Type": "String",
@@ -616,7 +609,9 @@
                             "install_cfn",
                             "install_wordpress",
                             "install_logs",
-                            "configure_wordpress"
+                            "configure_wordpress",
+                            "install_wp_plugins",
+                            "restore_wpbackup"
                         ]
                     },
                     "install_cfn": {
@@ -702,6 +697,12 @@
                             "/var/www/html": "http://wordpress.org/latest.tar.gz"
                         },
                         "files": {
+                          	"/usr/local/bin/rs-backup" : {
+                  				"source"	: "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/rs-backup",                 
+			      				"mode"		: "000755",
+                  				"owner"		: "ec2-user",
+                  				"group"		: "ec2-user"                       
+                           	}, 
                             "/tmp/setup.mysql": {
                                 "content": {
                                     "Fn::Join": [
@@ -805,6 +806,39 @@
                     
                     
                     
+          "install_wp_plugins": {
+           		"files": {
+                 	"/usr/local/bin/rs-wp-install-plugins" : {
+                  		"source"	: "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/rs-wp-install-plugins",                 
+			      		"mode"		: "000755",
+                  		"owner"		: "ec2-user",
+                  		"group"		: "ec2-user"
+     				}
+        		},
+         		"commands" : {
+              		"01_wp_install_cmroutemanager" : {
+                		"command" : "/usr/local/bin/rs-wp-install-plugins"
+              		}
+            	}
+            },
+            
+          "restore_wpbackup" : {
+            "files": {
+                 	"/usr/local/bin/rs-restore" : {
+                  		"source"	: "https://raw.githubusercontent.com/xqzy/cloudformation/master/30-SupportServer/rs-restore",                 
+			      		"mode"		: "000755",
+                  		"owner"		: "ec2-user",
+                  		"group"		: "ec2-user"
+     				}
+        		},
+         		"commands" : {
+              		"01_wp_restore_database_from_S3" : {
+                		"command" : "/usr/local/bin/rs-restore"
+              		}
+            	}
+            
+          }, 
+            
           "install_logs": {
             "packages" : {
               "yum" : {
@@ -890,18 +924,6 @@
 								"mode"		: "000755",
                 				"owner"		: "ec2-user",
                 				"group"		: "ec2-user"
-                   			},
-                      		"/var/www/html/wordpress/.htaccess" : {
-                     			"source" 	: { "Fn::Join" : [ "", ["https://raw.githubusercontent.com/xqzy/cloudformation/", { "Ref" : "BranchName" }, "/30-SupportServer/htaccess"]]},                 
-								"mode"		: "000755",
-                				"owner"		: "ec2-user",
-                				"group"		: "ec2-user"
-                    		},
-                      		"/etc/httpd/conf/httpd.conf" : {
-                				"source" 	: { "Fn::Join" : [ "", ["https://raw.githubusercontent.com/xqzy/cloudformation/", { "Ref" : "BranchName" }, "/30-SupportServer/httpdconf"]]},                 
-								"mode"		: "000644",
-                				"owner"		: "root",
-                				"group"		: "root"
                    			}
                        	}, 
                         "commands": {
@@ -974,10 +996,6 @@
                             },
                             "05_wordpress_install_core": {
                               "command": "/usr/local/bin/rs-wp-install-core"
-                            },
-                            "06_wordpress_install_plugins": {
-                              "cwd" : "/var/www/html/wordpress",
-                              "command":"/usr/local/bin/wp plugin install cm-route-manager"
                             }
                         }
                     }
@@ -1013,9 +1031,7 @@
                         "Ref": "WebServerSecurityGroup"
                     }
                 ],
-                "KeyName": {
-                    "Ref": "KeyName"
-                },
+                "KeyName": "thirty-gp001-keypair-eu",
                 "UserData": {
                     "Fn::Base64": {
                         "Fn::Join": [
