@@ -10,7 +10,7 @@
 # location	remote: github
 #			local: /usr/local/bin
 # created	12-5-2017
-# author	rs
+# author	rs a
 #
 cd /var/www/html/wordpress
 sudo /usr/local/bin/wp plugin install cm-route-manager
