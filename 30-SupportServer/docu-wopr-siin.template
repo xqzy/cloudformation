@@ -8,6 +8,12 @@
             "Default" : "thirty-gp001-keypair-eu", 
             "ConstraintDescription": "must be the name of an existing EC2 KeyPair."
         },
+        "BranchName": {
+          	"Description": "Name of GIT branch used of the software being deployed",
+            "Type": "String",
+            "Default": "master",
+            "ConstraintDescription": "must be same as the branchname in GIT"
+        }, 
         "InstanceType": {
             "Description": "WebServer EC2 instance type",
             "Type": "String",
@@ -89,6 +95,7 @@
             "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters."
         },
         "DBUser": {
+          	"Default": "dbuser",
             "NoEcho": "true",
             "Description": "The WordPress database admin account username",
             "Type": "String",
@@ -98,6 +105,7 @@
             "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters."
         },
         "DBPassword": {
+          	"Default": "password",
             "NoEcho": "true",
             "Description": "The WordPress database admin account password",
             "Type": "String",
@@ -107,6 +115,7 @@
             "ConstraintDescription": "must contain only alphanumeric characters."
         },
         "DBRootPassword": {
+          	"Default": "password",
             "NoEcho": "true",
             "Description": "MySQL root password",
             "Type": "String",
@@ -924,6 +933,18 @@
 								"mode"		: "000755",
                 				"owner"		: "ec2-user",
                 				"group"		: "ec2-user"
+                   			},
+ +                     		"/var/www/html/wordpress/.htaccess" : {
+ +                     			"source" 	: { "Fn::Join" : [ "", ["https://raw.githubusercontent.com/xqzy/cloudformation/", { "Ref" : "BranchName" }, "/30-SupportServer/htaccess"]]},                 
+ +								"mode"		: "000755",
+ +                				"owner"		: "ec2-user",
+ +                				"group"		: "ec2-user"
+ +                    		},
+ +                     		"/etc/httpd/conf/httpd.conf" : {
+ +                				"source" 	: { "Fn::Join" : [ "", ["https://raw.githubusercontent.com/xqzy/cloudformation/", { "Ref" : "BranchName" }, "/30-SupportServer/httpdconf"]]},                 
+ +								"mode"		: "000644",
+ +                				"owner"		: "root",
+ +                				"group"		: "root"
                    			}
                        	}, 
                         "commands": {
