@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "ources used if you create a stack from this template.",
+    "Description": "Thirty default stack for default servers.",
     "Parameters": {
        "KeyName": {
             "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",

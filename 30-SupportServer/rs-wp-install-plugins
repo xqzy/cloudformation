@@ -14,4 +14,6 @@
 #
 cd /var/www/html/wordpress
 sudo /usr/local/bin/wp plugin install cm-route-manager
+sudo /usr/local/bin/wp plugin install rewrite-rules-inspector
+
  
