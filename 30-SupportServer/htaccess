@@ -1,4 +1,4 @@
-# BEGIN WordPress
+# BEGIN WordPresss
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteBase /wordpress/
