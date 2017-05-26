@@ -10,7 +10,7 @@
 # location	remote: github
 #			local: /usr/local/bin
 # created	12-5-2017
-# author	rs
+# author	rs a
 #
 DATAFILENAME="docserver-data.ref01"
 FILEFILENAME="docserver-file.ref01"
